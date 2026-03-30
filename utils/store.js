@@ -1,0 +1,271 @@
+const RECORD_KEY = 'hlm_records_v1'
+const USER_KEY = 'hlm_user_v1'
+const FRIEND_KEY = 'hlm_friends_v1'
+const FRIEND_SHARE_KEY = 'hlm_friend_shares_v1'
+
+function genId(prefix = 'id') {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+}
+
+function pad2(n) {
+  return String(n).padStart(2, '0')
+}
+
+function today() {
+  const d = new Date()
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`
+}
+
+function getRecords() {
+  return wx.getStorageSync(RECORD_KEY) || []
+}
+
+function saveRecords(records) {
+  wx.setStorageSync(RECORD_KEY, records)
+}
+
+function ensureUser() {
+  const cached = wx.getStorageSync(USER_KEY)
+  if (cached && cached.id) {
+    const normalized = {
+      phoneBound: false,
+      phoneMasked: '',
+      phoneAuthCode: '',
+      ...cached
+    }
+    wx.setStorageSync(USER_KEY, normalized)
+    return normalized
+  }
+
+  const id = genId('u')
+  const user = {
+    id,
+    friendCode: id.slice(-6).toUpperCase(),
+    nickname: '喝了么用户',
+    motto: '记录即改变，今天也保持节奏。',
+    avatarUrl: '',
+    phoneBound: false,
+    phoneMasked: '',
+    phoneAuthCode: '',
+    isLoggedIn: false,
+    lastLoginAt: 0
+  }
+  wx.setStorageSync(USER_KEY, user)
+  return user
+}
+
+function getCurrentUser() {
+  return ensureUser()
+}
+
+function updateCurrentUser(patch) {
+  const user = ensureUser()
+  const next = {
+    ...user,
+    ...patch
+  }
+  wx.setStorageSync(USER_KEY, next)
+  return next
+}
+
+function markLoggedIn(payload = {}) {
+  return updateCurrentUser({
+    isLoggedIn: true,
+    lastLoginAt: Date.now(),
+    loginCode: payload.code || ''
+  })
+}
+
+function getFriends() {
+  return wx.getStorageSync(FRIEND_KEY) || []
+}
+
+function saveFriends(list) {
+  wx.setStorageSync(FRIEND_KEY, list)
+}
+
+function addFriend(payload) {
+  const friends = getFriends()
+  const me = ensureUser()
+  const code = String(payload.code || '').trim().toUpperCase()
+  const nickname = String(payload.nickname || '').trim() || `好友${code.slice(-3) || ''}`
+
+  if (!code) {
+    return { ok: false, message: '好友码不能为空' }
+  }
+
+  if (code === me.friendCode) {
+    return { ok: false, message: '不能添加自己' }
+  }
+
+  if (friends.some((item) => item.code === code)) {
+    return { ok: false, message: '该好友已存在' }
+  }
+
+  const next = {
+    id: genId('f'),
+    code,
+    nickname,
+    addedAt: Date.now()
+  }
+
+  friends.unshift(next)
+  saveFriends(friends)
+  return { ok: true, data: next }
+}
+
+function getFriendShares() {
+  return wx.getStorageSync(FRIEND_SHARE_KEY) || []
+}
+
+function saveFriendShares(list) {
+  wx.setStorageSync(FRIEND_SHARE_KEY, list)
+}
+
+function addFriendShare(payload) {
+  const list = getFriendShares()
+  const share = {
+    id: genId('fs'),
+    source: 'friend',
+    friendCode: payload.friendCode,
+    nickname: payload.nickname || '好友',
+    type: payload.type,
+    date: payload.date || today(),
+    content: payload.content || '',
+    amount: payload.amount || '',
+    createdAt: Date.now()
+  }
+  list.unshift(share)
+  saveFriendShares(list)
+  return share
+}
+
+function addRecord(payload) {
+  const user = ensureUser()
+  const records = getRecords()
+  const record = {
+    id: genId('r'),
+    source: 'self',
+    ownerId: user.id,
+    nickname: user.nickname,
+    avatarUrl: user.avatarUrl || '',
+    type: payload.type,
+    date: payload.date,
+    content: payload.content || '',
+    amount: payload.amount || '',
+    locationName: payload.locationName || '',
+    latitude: payload.latitude || 0,
+    longitude: payload.longitude || 0,
+    createdAt: Date.now()
+  }
+  records.unshift(record)
+  saveRecords(records)
+  return record
+}
+
+function updateRecordById(id, patch) {
+  const records = getRecords()
+  const index = records.findIndex((item) => item.id === id)
+  if (index < 0) return null
+
+  const next = {
+    ...records[index],
+    ...patch,
+    updatedAt: Date.now()
+  }
+  records[index] = next
+  saveRecords(records)
+  return next
+}
+
+function deleteRecordById(id) {
+  const records = getRecords()
+  const next = records.filter((item) => item.id !== id)
+  if (next.length === records.length) return false
+  saveRecords(next)
+  return true
+}
+
+function groupByDate(records) {
+  return records.reduce((acc, item) => {
+    const list = acc[item.date] || []
+    list.push(item)
+    acc[item.date] = list
+    return acc
+  }, {})
+}
+
+function getFeedItems(scopeFilter = 'all', typeFilter = 'all') {
+  const myRecords = getRecords().map((item) => ({
+    ...item,
+    source: 'self'
+  }))
+
+  const friendCodes = getFriends().map((f) => f.code)
+  const friendShares = getFriendShares()
+    .filter((item) => friendCodes.includes(item.friendCode))
+    .map((item) => ({
+      ...item,
+      source: 'friend'
+    }))
+
+  let merged = []
+  if (scopeFilter === 'self') {
+    merged = myRecords
+  } else if (scopeFilter === 'friends') {
+    merged = friendShares
+  } else {
+    merged = [...myRecords, ...friendShares]
+  }
+
+  if (typeFilter !== 'all') {
+    merged = merged.filter((item) => item.type === typeFilter)
+  }
+
+  merged.sort((a, b) => b.createdAt - a.createdAt)
+  return merged
+}
+
+function buildFriendQrPayload(user) {
+  const safeName = encodeURIComponent(user.nickname || '喝了么用户')
+  return `hlm://add-friend?code=${user.friendCode}&nickname=${safeName}`
+}
+
+function parseFriendQrPayload(raw) {
+  const text = String(raw || '').trim()
+  if (!text) return null
+
+  const codeFromPlain = text.toUpperCase().match(/^[A-Z0-9]{6,12}$/)
+  if (codeFromPlain) {
+    return { code: codeFromPlain[0], nickname: '' }
+  }
+
+  const match = text.match(/code=([A-Za-z0-9]{6,12})/)
+  if (!match) return null
+
+  const nicknameMatch = text.match(/nickname=([^&]+)/)
+  const nickname = nicknameMatch ? decodeURIComponent(nicknameMatch[1]) : ''
+  return {
+    code: match[1].toUpperCase(),
+    nickname
+  }
+}
+
+module.exports = {
+  getRecords,
+  saveRecords,
+  addRecord,
+  updateRecordById,
+  deleteRecordById,
+  groupByDate,
+  getCurrentUser,
+  updateCurrentUser,
+  markLoggedIn,
+  getFriends,
+  addFriend,
+  addFriendShare,
+  getFeedItems,
+  buildFriendQrPayload,
+  parseFriendQrPayload,
+  today
+}

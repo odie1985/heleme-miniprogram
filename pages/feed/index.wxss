@@ -1,0 +1,51 @@
+.filters {
+  margin-top: 20rpx;
+  display: flex;
+  gap: 14rpx;
+  flex-wrap: wrap;
+}
+
+.second-row {
+  margin-top: 12rpx;
+}
+
+.chip {
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.chip-active {
+  background: #111827;
+  color: #fff;
+}
+
+.feed-item {
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f3f4f6;
+}
+
+.item-head {
+  gap: 10rpx;
+}
+
+.author {
+  color: #6b7280;
+  font-size: 24rpx;
+}
+
+.time {
+  color: #6b7280;
+  font-size: 24rpx;
+}
+
+.content {
+  margin-top: 12rpx;
+}
+
+.amount {
+  margin-top: 8rpx;
+  color: #6b7280;
+  font-size: 24rpx;
+}

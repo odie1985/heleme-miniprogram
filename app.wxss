@@ -1,0 +1,55 @@
+page {
+  background: #f3f4f6;
+  color: #111827;
+  font-size: 28rpx;
+}
+
+.card {
+  margin: 24rpx;
+  padding: 24rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 20rpx rgba(17, 24, 39, 0.06);
+}
+
+.title {
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.sub {
+  margin-top: 8rpx;
+  color: #6b7280;
+  font-size: 24rpx;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+.btn-primary {
+  background: #111827;
+  color: #fff;
+  border-radius: 14rpx;
+}
+
+.tag {
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+}
+
+.tag-drink {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.tag-fitness {
+  background: #dbeafe;
+  color: #1e3a8a;
+}

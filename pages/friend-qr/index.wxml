@@ -1,0 +1,13 @@
+<view class="card">
+  <view class="title">{{user.nickname}} 的好友二维码</view>
+  <view class="sub">好友码：{{user.friendCode}}</view>
+
+  <image class="qr-img" src="{{qrImageUrl}}" mode="aspectFit" />
+
+  <view class="sub tip">好友可在“添加好友”页扫码识别</view>
+
+  <view class="actions">
+    <button class="btn-primary" bindtap="copyFriendCode">复制好友码</button>
+    <button bindtap="copyPayload">复制二维码内容</button>
+  </view>
+</view>

@@ -1,0 +1,135 @@
+<view class="profile-hero">
+  <view class="avatar-slot">
+    <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+      <image wx:if="{{user.avatarUrl}}" class="avatar-img" src="{{user.avatarUrl}}" mode="aspectFill" />
+      <view wx:else class="avatar-fallback">{{userAvatarChar}}</view>
+    </button>
+  </view>
+
+  <view class="hero-main">
+    <view class="name-row">
+      <view class="profile-name" bindtap="onDisplayNameTap">{{displayName}}</view>
+      <text class="sleep-z" wx:if="{{user.isLoggedIn}}">zZ</text>
+    </view>
+
+    <view class="wxid-row">
+      <text class="wxid-value">{{displayMotto}}</text>
+    </view>
+
+    <view class="hero-pills">
+      <view class="hero-pill friend-pill" bindtap="toggleFriendPanel">
+        <view class="mini-avatar">{{friends.length ? friends[0].nickname.slice(0, 1) : '友'}}</view>
+        <text>{{friends.length}}个朋友</text>
+        <view class="red-dot" wx:if="{{friends.length}}"></view>
+      </view>
+    </view>
+  </view>
+
+  <view class="hero-right">
+    <view class="qr-entry" bindtap="goMyQr">
+      <view class="qr-icon">
+        <view class="qr-corner tl"></view>
+        <view class="qr-corner tr"></view>
+        <view class="qr-corner bl"></view>
+        <view class="qr-dot"></view>
+      </view>
+    </view>
+    <text class="arrow">›</text>
+  </view>
+</view>
+
+<view class="card phone-card">
+  <view class="sub">{{displayPhoneText}}</view>
+  <button class="phone-btn" open-type="getPhoneNumber" bindgetphonenumber="onGetPhoneNumber">{{user.phoneBound ? '更新手机号授权' : '获取手机号'}}</button>
+</view>
+
+<view class="card" wx:if="{{showFriendPanel}}">
+  <view class="title">我的好友</view>
+  <button class="btn-primary entry-btn friend-scan-btn" bindtap="goScanAddFriend" loading="{{scanLoading}}" disabled="{{scanLoading}}">扫码加好友</button>
+  <view class="friend-list">
+    <view class="friend-item" wx:for="{{friends}}" wx:key="id">
+      <view>
+        <view>{{item.nickname}}</view>
+        <view class="sub">{{item.code}}</view>
+      </view>
+      <button size="mini" data-code="{{item.code}}" data-nickname="{{item.nickname}}" bindtap="mockFriendShare">模拟TA分享</button>
+    </view>
+  </view>
+  <view class="sub" wx:if="{{!friends.length}}">还没有好友，先扫一个吧。</view>
+</view>
+
+<view class="card">
+  <view class="stat-month-nav">
+    <view class="month-btn" bindtap="goPrevStatMonth">‹</view>
+    <picker mode="date" fields="month" value="{{statMonth}}" bindchange="onStatMonthChange">
+      <view class="title month-title">{{statMonthLabel}}统计</view>
+    </picker>
+    <view class="month-btn" bindtap="goNextStatMonth">›</view>
+  </view>
+  <view class="sub">本月已记录 {{monthTotal}} 条</view>
+
+  <view class="stat-grid">
+    <view class="stat-item stat-drink">
+      <view class="stat-num">{{monthDrinkCount}}</view>
+      <view class="stat-label">喝酒记录</view>
+    </view>
+    <view class="stat-item stat-fitness">
+      <view class="stat-num">{{monthFitnessCount}}</view>
+      <view class="stat-label">健身记录</view>
+    </view>
+  </view>
+
+  <view class="rate-line">
+    <text>喝酒占比 {{drinkRate}}%</text>
+    <text>健身占比 {{fitnessRate}}%</text>
+  </view>
+  <view class="progress-wrap">
+    <view class="progress progress-drink" style="width: {{drinkRate}}%;"></view>
+    <view class="progress progress-fitness" style="width: {{fitnessRate}}%;"></view>
+  </view>
+
+  <view class="pie-grid">
+    <view class="pie-panel">
+      <view class="pie-title">种类占比</view>
+      <view class="pie-panel-main">
+        <view class="pie-wrap compact">
+          <canvas type="2d" id="drinkPieCanvas" class="drink-pie-canvas compact"></canvas>
+          <view class="pie-empty" wx:if="{{drinkPieEmpty}}">暂无</view>
+        </view>
+        <view class="pie-legend compact" wx:if="{{drinkPieLegend.length}}">
+          <view class="legend-item compact" wx:for="{{drinkPieLegend}}" wx:key="name">
+            <view class="legend-left compact">
+              <view class="legend-dot" style="background: {{item.color}};"></view>
+              <text>{{item.name}}</text>
+            </view>
+            <text class="legend-right">{{item.percentText}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="pie-panel">
+      <view class="pie-title">场景占比</view>
+      <view class="pie-panel-main">
+        <view class="pie-wrap compact">
+          <canvas type="2d" id="drinkScenePieCanvas" class="drink-pie-canvas compact"></canvas>
+          <view class="pie-empty" wx:if="{{drinkScenePieEmpty}}">暂无</view>
+        </view>
+        <view class="pie-legend compact" wx:if="{{drinkScenePieLegend.length}}">
+          <view class="legend-item compact" wx:for="{{drinkScenePieLegend}}" wx:key="name">
+            <view class="legend-left compact">
+              <view class="legend-dot" style="background: {{item.color}};"></view>
+              <text>{{item.name}}</text>
+            </view>
+            <text class="legend-right">{{item.percentText}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view class="card">
+  <view class="title">累计数据</view>
+  <view class="sub">总记录 {{totalRecords}} 条</view>
+</view>

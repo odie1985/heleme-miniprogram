@@ -1,0 +1,14 @@
+.add-wrap {
+  text-align: center;
+}
+
+.scan-btn {
+  margin-top: 24rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  border-radius: 14rpx;
+  text-align: center;
+}

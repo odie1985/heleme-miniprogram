@@ -1,0 +1,157 @@
+<view class="card">
+  <view class="month-nav">
+    <view class="month-btn" bindtap="goPrevMonth">‹</view>
+    <picker mode="date" fields="month" value="{{currentYear}}-{{currentMonth < 10 ? '0' + currentMonth : currentMonth}}" bindchange="onNavigateMonthChange">
+      <view class="title month-title">{{currentYear}}年{{currentMonth}}月</view>
+    </picker>
+    <view class="month-btn" bindtap="goNextMonth">›</view>
+  </view>
+  <view class="sub">点击日期查看记录，点右下角 + 快速发布</view>
+</view>
+
+<view class="card">
+  <view class="week-head">
+    <text>日</text>
+    <text>一</text>
+    <text>二</text>
+    <text>三</text>
+    <text>四</text>
+    <text>五</text>
+    <text>六</text>
+  </view>
+  <view class="days-grid">
+    <block wx:for="{{days}}" wx:key="key">
+      <view wx:if="{{item.isPlaceholder}}" class="day-item day-placeholder"></view>
+      <view wx:else class="day-item {{item.active ? 'active' : ''}} {{item.isToday ? 'today' : ''}}" bindtap="pickDay" data-date="{{item.date}}">
+        <text class="day-num">{{item.day}}</text>
+        <view class="day-dots" wx:if="{{item.hasDrink || item.hasFitness}}">
+          <view class="dot dot-drink" wx:if="{{item.hasDrink}}"></view>
+          <view class="dot dot-fitness" wx:if="{{item.hasFitness}}"></view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>
+
+<view class="card">
+  <view class="row space-between">
+    <view>
+      <view class="title">{{selectedDate}}</view>
+      <view class="sub">当天记录 {{selectedLogs.length}} 条（点记录可修改/删除）</view>
+    </view>
+  </view>
+
+  <view class="log-list" wx:if="{{selectedLogs.length}}">
+    <block wx:for="{{selectedLogs}}" wx:key="id">
+      <view class="log-item" bindtap="onLogAction" data-id="{{item.id}}">
+        <text class="tag {{item.type === 'drink' ? 'tag-drink' : 'tag-fitness'}}">{{item.type === 'drink' ? '喝酒' : '健身'}}</text>
+        <text class="log-content">{{item.content || '无备注'}}</text>
+        <text class="log-amount" wx:if="{{item.amount}}">{{item.amount}}</text>
+        <text class="log-location" wx:if="{{item.locationName}}">📍{{item.locationName}}</text>
+        <text class="log-arrow">›</text>
+      </view>
+    </block>
+  </view>
+  <view class="sub" wx:else>这一天还没有记录</view>
+</view>
+
+<view class="fab-add" bindtap="openQuickPanel">
+  <text class="fab-plus">+</text>
+</view>
+
+<view wx:if="{{showQuickPanel}}" class="mask" bindtap="closeQuickPanel"></view>
+<view wx:if="{{showQuickPanel}}" class="panel">
+  <view class="panel-title">快速记录</view>
+  <view class="sub">{{quickForm.date}}</view>
+
+  <view class="type-row">
+    <view class="type-chip {{quickForm.type==='drink' ? 'type-chip-active' : ''}}" data-value="drink" bindtap="setQuickType">喝酒</view>
+    <view class="type-chip {{quickForm.type==='fitness' ? 'type-chip-active' : ''}}" data-value="fitness" bindtap="setQuickType">健身</view>
+  </view>
+
+  <block wx:if="{{quickForm.type==='drink'}}">
+    <view class="field-label">种类</view>
+    <view class="option-wrap">
+      <view
+        wx:for="{{drinkCategories}}"
+        wx:key="value"
+        class="option-chip {{quickForm.drinkCategory===item.value ? 'option-chip-active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="selectDrinkCategory"
+      >
+        {{item.label}}
+      </view>
+    </view>
+
+    <view class="field-label">场景</view>
+    <view class="option-wrap">
+      <view
+        wx:for="{{drinkScenes}}"
+        wx:key="value"
+        class="option-chip {{quickForm.drinkScene===item.value ? 'option-chip-active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="selectDrinkScene"
+      >
+        {{item.label}}
+      </view>
+    </view>
+
+    <view class="field-label">喝酒的量（备注）</view>
+    <input class="input-like" placeholder="例如：2瓶 / 半斤 / 3杯" value="{{quickForm.drinkAmountNote}}" bindinput="onDrinkAmountNoteInput" />
+
+    <view class="field-label">状态</view>
+    <view class="option-wrap">
+      <view
+        wx:for="{{drinkStates}}"
+        wx:key="value"
+        class="option-chip {{quickForm.drinkState===item.value ? 'option-chip-active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="selectDrinkState"
+      >
+        {{item.label}}
+      </view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="field-label">运动种类</view>
+    <view class="option-wrap">
+      <view
+        wx:for="{{fitnessTypes}}"
+        wx:key="value"
+        class="option-chip {{quickForm.fitnessType===item.value ? 'option-chip-active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="selectFitnessType"
+      >
+        {{item.label}}
+      </view>
+    </view>
+
+    <view class="field-label">运动时长</view>
+    <view class="option-wrap">
+      <view
+        wx:for="{{fitnessDurations}}"
+        wx:key="value"
+        class="option-chip {{quickForm.fitnessDuration===item.value ? 'option-chip-active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="selectFitnessDuration"
+      >
+        {{item.label}}
+      </view>
+    </view>
+  </block>
+
+  <view class="field-label">位置（可选）</view>
+  <view class="location-row">
+    <view class="location-text">{{quickForm.locationName || '未选择位置'}}</view>
+    <view class="location-actions">
+      <view class="location-btn" catchtap="chooseQuickLocation">添加位置</view>
+      <view class="location-btn secondary" wx:if="{{quickForm.locationName}}" catchtap="clearQuickLocation">清除</view>
+    </view>
+  </view>
+
+  <view class="panel-actions">
+    <button size="mini" bindtap="closeQuickPanel">取消</button>
+    <button class="btn-primary" size="mini" bindtap="submitQuickRecord">保存</button>
+  </view>
+</view>

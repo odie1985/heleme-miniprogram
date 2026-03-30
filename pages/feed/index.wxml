@@ -1,0 +1,37 @@
+<view class="card">
+  <view class="title">近期动态</view>
+  <view class="sub">你和好友的喝酒/健身分享</view>
+
+  <view class="filters">
+    <view class="chip {{scopeFilter==='all' ? 'chip-active' : ''}}" data-value="all" bindtap="setScopeFilter">全部</view>
+    <view class="chip {{scopeFilter==='self' ? 'chip-active' : ''}}" data-value="self" bindtap="setScopeFilter">我的</view>
+    <view class="chip {{scopeFilter==='friends' ? 'chip-active' : ''}}" data-value="friends" bindtap="setScopeFilter">好友</view>
+  </view>
+
+  <view class="filters second-row">
+    <view class="chip {{typeFilter==='all' ? 'chip-active' : ''}}" data-value="all" bindtap="setTypeFilter">全部类型</view>
+    <view class="chip {{typeFilter==='drink' ? 'chip-active' : ''}}" data-value="drink" bindtap="setTypeFilter">喝酒</view>
+    <view class="chip {{typeFilter==='fitness' ? 'chip-active' : ''}}" data-value="fitness" bindtap="setTypeFilter">健身</view>
+  </view>
+</view>
+
+<view class="card" wx:if="{{list.length}}">
+  <block wx:for="{{list}}" wx:key="id">
+    <view class="feed-item">
+      <view class="row space-between">
+        <view class="row item-head">
+          <text class="tag {{item.type === 'drink' ? 'tag-drink' : 'tag-fitness'}}">{{item.type === 'drink' ? '喝酒' : '健身'}}</text>
+          <text class="author">{{item.sourceLabel}}</text>
+        </view>
+        <text class="time">{{item.date}}</text>
+      </view>
+      <view class="content">{{item.content || '无备注'}}</view>
+      <view class="amount" wx:if="{{item.amount}}">数量/时长：{{item.amount}}</view>
+      <view class="amount" wx:if="{{item.locationName}}">位置：{{item.locationName}}</view>
+    </view>
+  </block>
+</view>
+
+<view class="card" wx:else>
+  <view class="sub">还没有相关动态，先去日历页记一条，或在“我的”页添加好友。</view>
+</view>

@@ -1,0 +1,25 @@
+<view class="card">
+  <view class="title">今天做了什么？</view>
+  <view class="sub">发布一条喝酒或健身记录</view>
+</view>
+
+<view class="card">
+  <view class="field-label">类型</view>
+  <view class="type-row">
+    <view class="type-chip {{form.type==='drink' ? 'type-chip-active' : ''}}" data-value="drink" bindtap="setType">喝酒</view>
+    <view class="type-chip {{form.type==='fitness' ? 'type-chip-active' : ''}}" data-value="fitness" bindtap="setType">健身</view>
+  </view>
+
+  <view class="field-label">日期</view>
+  <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+    <view class="input-like">{{form.date}}</view>
+  </picker>
+
+  <view class="field-label">数量/时长（可选）</view>
+  <input class="input-like" placeholder="例如：2杯 / 跑步45分钟" value="{{form.amount}}" bindinput="onAmountInput" />
+
+  <view class="field-label">备注</view>
+  <textarea class="textarea-like" maxlength="120" placeholder="记录一下当时状态" value="{{form.content}}" bindinput="onContentInput" />
+
+  <button class="btn-primary submit" bindtap="submit">发布记录</button>
+</view>

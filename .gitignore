@@ -1,0 +1,23 @@
+# 依赖
+node_modules/
+
+# 构建输出
+dist/
+unpackage/
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统
+.DS_Store
+
+# 日志
+*.log
+npm-debug.log*
+
+# 环境配置
+.env
+project.private.config.json

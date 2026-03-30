@@ -1,0 +1,53 @@
+{
+  "pages": [
+    "pages/calendar/index",
+    "pages/feed/index",
+    "pages/profile/index",
+    "pages/friend-add/index",
+    "pages/friend-qr/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "喝了么",
+    "navigationBarBackgroundColor": "#1f2937",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f3f4f6",
+    "backgroundTextStyle": "dark"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于给记录添加位置"
+    }
+  },
+  "requiredPrivateInfos": [
+    "chooseLocation",
+    "getLocation"
+  ],
+  "tabBar": {
+    "color": "#6b7280",
+    "selectedColor": "#111827",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/calendar/index",
+        "text": "日历",
+        "iconPath": "assets/tabbar/calendar.png",
+        "selectedIconPath": "assets/tabbar/calendar-active.png"
+      },
+      {
+        "pagePath": "pages/feed/index",
+        "text": "动态",
+        "iconPath": "assets/tabbar/feed.png",
+        "selectedIconPath": "assets/tabbar/feed-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "assets/tabbar/profile.png",
+        "selectedIconPath": "assets/tabbar/profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

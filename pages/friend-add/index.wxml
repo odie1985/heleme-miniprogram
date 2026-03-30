@@ -1,0 +1,6 @@
+<view class="card add-wrap">
+  <view class="title">添加好友</view>
+  <view class="sub">扫描好友二维码即可添加</view>
+
+  <button class="btn-primary scan-btn" bindtap="scanFriendQr" loading="{{isScanning}}" disabled="{{isScanning}}">扫码</button>
+</view>
