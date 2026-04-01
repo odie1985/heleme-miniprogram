@@ -108,6 +108,12 @@ Page({
     statMonthLabel: ''
   },
 
+  onLoad(options) {
+    const parsed = parseYm(options && options.month)
+    if (!parsed) return
+    this.setData({ statMonth: `${parsed.year}-${pad2(parsed.month)}` })
+  },
+
   onShow() {
     if (!this.data.statMonth) {
       this.setData({ statMonth: currentMonthPrefix() })
@@ -567,5 +573,42 @@ Page({
       title: '已生成好友动态',
       icon: 'none'
     })
+  },
+
+  getShareInfoForStatMonth() {
+    const month = this.data.statMonth || currentMonthPrefix()
+    const monthLabel = this.data.statMonthLabel || getMonthTitle(month)
+    const drink = this.data.monthDrinkCount || 0
+    const fitness = this.data.monthFitnessCount || 0
+    const total = this.data.monthTotal || 0
+    return {
+      month,
+      title: `我在${monthLabel}记录了${total}次：喝酒${drink}次，健身${fitness}次`
+    }
+  },
+
+  onShareAppMessage(options) {
+    const source = options && options.target && options.target.dataset && options.target.dataset.shareSource
+    if (source === 'stat') {
+      const shareInfo = this.getShareInfoForStatMonth()
+      return {
+        title: shareInfo.title,
+        path: `/pages/profile/index?month=${encodeURIComponent(shareInfo.month)}`
+      }
+    }
+
+    const userName = this.data.displayName || '喝了么用户'
+    return {
+      title: `${userName}邀请你一起在喝了么打卡`,
+      path: '/pages/profile/index'
+    }
+  },
+
+  onShareTimeline() {
+    const shareInfo = this.getShareInfoForStatMonth()
+    return {
+      title: shareInfo.title,
+      query: `month=${encodeURIComponent(shareInfo.month)}`
+    }
   }
 })

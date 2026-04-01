@@ -16,8 +16,48 @@ function today() {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`
 }
 
+function isCoordinateText(text) {
+  const v = String(text || '').trim()
+  if (!v) return false
+  return /^-?\d+(\.\d+)?\s*[,，]\s*-?\d+(\.\d+)?$/.test(v)
+}
+
+function sanitizeLocationName(name) {
+  const v = String(name || '').trim()
+  if (!v) return ''
+  if (isCoordinateText(v)) return ''
+  return v
+}
+
+function sanitizeImages(images) {
+  if (!Array.isArray(images)) return []
+  return images.filter((item) => typeof item === 'string' && item.trim())
+}
+
 function getRecords() {
-  return wx.getStorageSync(RECORD_KEY) || []
+  const records = wx.getStorageSync(RECORD_KEY) || []
+  let changed = false
+  const normalized = records.map((item) => {
+    const nextName = sanitizeLocationName(item.locationName)
+    const nextImages = sanitizeImages(item.images)
+    const oldImages = Array.isArray(item.images) ? item.images : []
+    if (
+      nextName !== (item.locationName || '') ||
+      JSON.stringify(nextImages) !== JSON.stringify(oldImages)
+    ) {
+      changed = true
+      return {
+        ...item,
+        locationName: nextName,
+        images: nextImages
+      }
+    }
+    return item
+  })
+  if (changed) {
+    saveRecords(normalized)
+  }
+  return normalized
 }
 
 function saveRecords(records) {
@@ -153,7 +193,8 @@ function addRecord(payload) {
     date: payload.date,
     content: payload.content || '',
     amount: payload.amount || '',
-    locationName: payload.locationName || '',
+    locationName: sanitizeLocationName(payload.locationName),
+    images: sanitizeImages(payload.images),
     latitude: payload.latitude || 0,
     longitude: payload.longitude || 0,
     createdAt: Date.now()
@@ -171,6 +212,16 @@ function updateRecordById(id, patch) {
   const next = {
     ...records[index],
     ...patch,
+    locationName: sanitizeLocationName(
+      patch && Object.prototype.hasOwnProperty.call(patch, 'locationName')
+        ? patch.locationName
+        : records[index].locationName
+    ),
+    images: sanitizeImages(
+      patch && Object.prototype.hasOwnProperty.call(patch, 'images')
+        ? patch.images
+        : records[index].images
+    ),
     updatedAt: Date.now()
   }
   records[index] = next

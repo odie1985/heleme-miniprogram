@@ -67,6 +67,7 @@
     <view class="month-btn" bindtap="goNextStatMonth">›</view>
   </view>
   <view class="sub">本月已记录 {{monthTotal}} 条</view>
+  <button class="btn-primary stat-share-btn" open-type="share" data-share-source="stat">分享本月总结</button>
 
   <view class="stat-grid">
     <view class="stat-item stat-drink">

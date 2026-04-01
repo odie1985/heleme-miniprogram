@@ -32,6 +32,83 @@
   text-underline-offset: 6rpx;
 }
 
+.shared-card {
+  border: 1rpx solid #dbeafe;
+  background: linear-gradient(180deg, #eff6ff, #ffffff);
+}
+
+.shared-title {
+  color: #1d4ed8;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.shared-poster-wrap {
+  margin-top: 12rpx;
+  padding: 16rpx;
+  border-radius: 18rpx;
+  background: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shared-poster {
+  width: 100%;
+  height: 1100rpx;
+  border-radius: 16rpx;
+  background: #f3f4f6;
+}
+
+.shared-date {
+  margin-top: 8rpx;
+  color: #6b7280;
+  font-size: 22rpx;
+}
+
+.shared-type {
+  margin-top: 10rpx;
+  color: #111827;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.shared-content {
+  margin-top: 8rpx;
+  color: #1f2937;
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+.shared-meta {
+  margin-top: 8rpx;
+  color: #4b5563;
+  font-size: 22rpx;
+}
+
+.shared-cta-desc {
+  margin-top: 16rpx;
+  color: #4b5563;
+  font-size: 24rpx;
+}
+
+.shared-cta-btn {
+  margin-top: 14rpx;
+  width: 100%;
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: 14rpx;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.shared-cta-btn::after {
+  border: none;
+}
+
 .days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -67,33 +144,122 @@
 
 .day-dots {
   position: absolute;
-  bottom: 8rpx;
+  bottom: 7rpx;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: 8rpx;
+  align-items: center;
 }
 
-.dot {
-  width: 8rpx;
-  height: 8rpx;
-  border-radius: 50%;
+.mark {
+  position: relative;
+  width: 18rpx;
+  height: 18rpx;
 }
 
-.dot-drink {
+.mark-drink {
+  width: 18rpx;
+  height: 20rpx;
+}
+
+.beer-cap {
+  position: absolute;
+  top: 0;
+  left: 6rpx;
+  width: 6rpx;
+  height: 2rpx;
+  border-radius: 2rpx;
+  background: #b45309;
+}
+
+.bottle-neck {
+  position: absolute;
+  top: 2rpx;
+  left: 6rpx;
+  width: 6rpx;
+  height: 5rpx;
+  border-radius: 2rpx 2rpx 1rpx 1rpx;
   background: #f59e0b;
 }
 
-.dot-fitness {
+.bottle-body {
+  position: absolute;
+  top: 7rpx;
+  left: 2rpx;
+  width: 14rpx;
+  height: 13rpx;
+  border-radius: 3rpx 3rpx 5rpx 5rpx;
+  background: #f59e0b;
+  box-sizing: border-box;
+  border: 1rpx solid #b45309;
+}
+
+.beer-label {
+  position: absolute;
+  top: 11rpx;
+  left: 5rpx;
+  width: 8rpx;
+  height: 5rpx;
+  border-radius: 2rpx;
+  background: #fde68a;
+}
+
+.mark-fitness {
+  width: 20rpx;
+  height: 14rpx;
+}
+
+.db-bar {
+  position: absolute;
+  top: 6rpx;
+  left: 5rpx;
+  width: 10rpx;
+  height: 3rpx;
+  border-radius: 2rpx;
   background: #2563eb;
 }
 
-.day-item.active .dot-drink {
+.db-end {
+  position: absolute;
+  top: 3rpx;
+  width: 5rpx;
+  height: 10rpx;
+  border-radius: 2rpx;
+  background: #3b82f6;
+}
+
+.db-end.left {
+  left: 0;
+}
+
+.db-end.right {
+  right: 0;
+}
+
+.day-item.active .bottle-neck {
   background: #fcd34d;
 }
 
-.day-item.active .dot-fitness {
+.day-item.active .bottle-body {
+  background: #fde68a;
+  border-color: #fbbf24;
+}
+
+.day-item.active .beer-cap {
+  background: #fbbf24;
+}
+
+.day-item.active .beer-label {
+  background: #fff7ed;
+}
+
+.day-item.active .db-bar {
   background: #93c5fd;
+}
+
+.day-item.active .db-end {
+  background: #bfdbfe;
 }
 
 .log-list {
@@ -103,6 +269,9 @@
 .log-item {
   padding: 14rpx 0;
   border-bottom: 1rpx solid #f3f4f6;
+}
+
+.log-main {
   display: flex;
   align-items: center;
   gap: 14rpx;
@@ -125,6 +294,26 @@
 .log-location {
   color: #6b7280;
   font-size: 22rpx;
+}
+
+.log-location-row {
+  margin-top: 8rpx;
+  color: #6b7280;
+  font-size: 22rpx;
+}
+
+.log-images {
+  margin-top: 12rpx;
+  display: flex;
+  gap: 10rpx;
+  flex-wrap: wrap;
+}
+
+.log-image {
+  width: 110rpx;
+  height: 110rpx;
+  border-radius: 10rpx;
+  background: #f3f4f6;
 }
 
 .fab-add {
@@ -248,6 +437,59 @@
   color: #374151;
 }
 
+.image-row {
+  padding: 14rpx 16rpx;
+  border-radius: 14rpx;
+  background: #f9fafb;
+}
+
+.image-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.image-item {
+  position: relative;
+  width: 118rpx;
+  height: 118rpx;
+}
+
+.quick-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 10rpx;
+  background: #e5e7eb;
+}
+
+.image-remove {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 50%;
+  background: rgba(17, 24, 39, 0.8);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20rpx;
+  line-height: 1;
+}
+
+.image-add-btn {
+  height: 60rpx;
+  border-radius: 12rpx;
+  background: #111827;
+  color: #fff;
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .input-like {
   padding: 18rpx;
   border-radius: 14rpx;
@@ -268,4 +510,36 @@
   display: flex;
   justify-content: flex-end;
   gap: 14rpx;
+}
+
+.btn-share {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #fff;
+  border: none;
+}
+
+.btn-share::after {
+  border: none;
+}
+
+.share-poster-canvas {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 600px;
+  height: 960px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.share-cover-canvas {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 600px;
+  height: 600px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
 }
