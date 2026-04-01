@@ -1,3 +1,20 @@
+<view class="card shared-card" wx:if="{{sharedRecord}}">
+  <view class="shared-title">来自朋友圈的记录分享</view>
+  <view class="shared-poster-wrap" wx:if="{{sharedPosterUrl}}">
+    <image class="shared-poster" src="{{sharedPosterUrl}}" mode="aspectFit" />
+  </view>
+  <view wx:else>
+    <view class="shared-date">{{sharedRecord.date}}</view>
+    <view class="shared-type">{{sharedRecord.typeLabel || '记录'}}</view>
+    <view class="shared-content">{{sharedRecord.content || '无内容'}}</view>
+    <view class="shared-meta" wx:if="{{sharedRecord.amount}}">量：{{sharedRecord.amount}}</view>
+    <view class="shared-meta" wx:if="{{sharedRecord.locationName}}">地点：{{sharedRecord.locationName}}</view>
+  </view>
+  <view class="shared-cta-desc">想记录你的喝酒和健身日常？</view>
+  <button class="shared-cta-btn" bindtap="onEnterAppFromShare">进入小程序，立即注册</button>
+</view>
+
+<block wx:if="{{!sharedRecord}}">
 <view class="card">
   <view class="month-nav">
     <view class="month-btn" bindtap="goPrevMonth">‹</view>
@@ -25,8 +42,17 @@
       <view wx:else class="day-item {{item.active ? 'active' : ''}} {{item.isToday ? 'today' : ''}}" bindtap="pickDay" data-date="{{item.date}}">
         <text class="day-num">{{item.day}}</text>
         <view class="day-dots" wx:if="{{item.hasDrink || item.hasFitness}}">
-          <view class="dot dot-drink" wx:if="{{item.hasDrink}}"></view>
-          <view class="dot dot-fitness" wx:if="{{item.hasFitness}}"></view>
+          <view class="mark mark-drink" wx:if="{{item.hasDrink}}">
+            <view class="beer-cap"></view>
+            <view class="bottle-neck"></view>
+            <view class="bottle-body"></view>
+            <view class="beer-label"></view>
+          </view>
+          <view class="mark mark-fitness" wx:if="{{item.hasFitness}}">
+            <view class="db-end left"></view>
+            <view class="db-bar"></view>
+            <view class="db-end right"></view>
+          </view>
         </view>
       </view>
     </block>
@@ -44,11 +70,26 @@
   <view class="log-list" wx:if="{{selectedLogs.length}}">
     <block wx:for="{{selectedLogs}}" wx:key="id">
       <view class="log-item" bindtap="onLogAction" data-id="{{item.id}}">
-        <text class="tag {{item.type === 'drink' ? 'tag-drink' : 'tag-fitness'}}">{{item.type === 'drink' ? '喝酒' : '健身'}}</text>
-        <text class="log-content">{{item.content || '无备注'}}</text>
-        <text class="log-amount" wx:if="{{item.amount}}">{{item.amount}}</text>
-        <text class="log-location" wx:if="{{item.locationName}}">📍{{item.locationName}}</text>
-        <text class="log-arrow">›</text>
+        <view class="log-main">
+          <text class="tag {{item.type === 'drink' ? 'tag-drink' : 'tag-fitness'}}">{{item.type === 'drink' ? '喝酒' : '健身'}}</text>
+          <text class="log-content">{{item.content || '无备注'}}</text>
+          <text class="log-amount" wx:if="{{item.amount}}">{{item.amount}}</text>
+          <text class="log-arrow">›</text>
+        </view>
+        <view class="log-location-row" wx:if="{{item.locationName}}">📍{{item.locationName}}</view>
+        <view class="log-images" wx:if="{{item.images && item.images.length}}">
+          <image
+            class="log-image"
+            wx:for="{{item.images}}"
+            wx:for-item="img"
+            wx:key="*this"
+            src="{{img}}"
+            mode="aspectFill"
+            data-id="{{item.id}}"
+            data-index="{{index}}"
+            catchtap="onLogImageTap"
+          />
+        </view>
       </view>
     </block>
   </view>
@@ -150,8 +191,24 @@
     </view>
   </view>
 
+  <view class="field-label">图片（可选）</view>
+  <view class="image-row">
+    <view class="image-list" wx:if="{{quickForm.images.length}}">
+      <view class="image-item" wx:for="{{quickForm.images}}" wx:key="*this">
+        <image class="quick-image" src="{{item}}" mode="aspectFill" data-index="{{index}}" catchtap="previewQuickImage" />
+        <view class="image-remove" data-index="{{index}}" catchtap="removeQuickImage">×</view>
+      </view>
+    </view>
+    <view class="image-add-btn" catchtap="chooseQuickImages">+ 添加图片</view>
+  </view>
+
   <view class="panel-actions">
     <button size="mini" bindtap="closeQuickPanel">取消</button>
+    <button class="btn-share" size="mini" bindtap="shareQuickToTimeline">分享到朋友圈</button>
     <button class="btn-primary" size="mini" bindtap="submitQuickRecord">保存</button>
   </view>
 </view>
+</block>
+
+<canvas canvas-id="sharePosterCanvas" class="share-poster-canvas"></canvas>
+<canvas canvas-id="shareCoverCanvas" class="share-cover-canvas"></canvas>
