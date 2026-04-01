@@ -939,8 +939,18 @@ Page({
     const shared = this.data.sharedRecord
     if (!shared) return
     const localBundle = this.getLocalShareBundle(shared.shareId)
-    if (localBundle && localBundle.posterUrl) {
-      this.setData({ sharedPosterUrl: localBundle.posterUrl })
+    if (localBundle) {
+      const localPosterUrl =
+        shared.imageCount > 0
+          ? (localBundle.coverUrl || localBundle.posterUrl || '')
+          : (localBundle.posterUrl || localBundle.coverUrl || '')
+      if (localPosterUrl) {
+        this.setData({ sharedPosterUrl: localPosterUrl })
+        return
+      }
+    }
+    if (shared.posterUrl) {
+      this.setData({ sharedPosterUrl: shared.posterUrl })
       return
     }
     if (shared.cloudFileId) {
