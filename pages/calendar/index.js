@@ -224,6 +224,7 @@ Page({
       ['sl', shareInfo.locationName || ''],
       ['si', String(shareInfo.imageCount || 0)],
       ['sid', this.data.timelineShareId || ''],
+      ['spu', this.data.sharePosterImageUrl || ''],
       ['cf', this.data.sharePosterCloudFileId || '']
     ]
     return params
@@ -870,6 +871,26 @@ Page({
     }
   },
 
+  ensureLocalShareFile(filePath, done) {
+    if (!filePath) {
+      done('')
+      return
+    }
+    if (String(filePath).startsWith('wxfile://')) {
+      done(filePath)
+      return
+    }
+    wx.saveFile({
+      tempFilePath: filePath,
+      success: (res) => {
+        done(res.savedFilePath || filePath)
+      },
+      fail: () => {
+        done(filePath)
+      }
+    })
+  },
+
   uploadShareAsset(filePath, done) {
     if (!filePath || !wx.cloud || typeof wx.cloud.uploadFile !== 'function') {
       done({ fileID: '', tempUrl: '', error: '云能力不可用' })
@@ -944,26 +965,31 @@ Page({
       firstImage: (this.data.quickForm.images || [])[0] || ''
     }
     const persistAndOpenMenu = (coverUrl, posterCloud) => {
-      const shareId = this.saveLocalShareBundle({
-        coverUrl: coverUrl || '',
-        posterUrl: (posterCloud && posterCloud.tempUrl) || coverUrl || '',
-        info: shareInfo
-      })
-      this.setData({
-        timelineShareDraft: shareInfo,
-        timelineShareId: shareId,
-        shareCoverImageUrl: coverUrl || '',
-        sharePosterCloudFileId: (posterCloud && posterCloud.fileID) || '',
-        sharePosterImageUrl: (posterCloud && posterCloud.tempUrl) || ''
-      })
-      wx.showShareMenu({
-        withShareTicket: true,
-        menus: ['shareTimeline']
-      })
-      wx.showModal({
-        title: '分享到朋友圈',
-        content: '请点击右上角“···”选择“分享到朋友圈”',
-        showCancel: false
+      const posterSource = (posterCloud && posterCloud.tempUrl) || coverUrl || ''
+      this.ensureLocalShareFile(coverUrl, (localCoverUrl) => {
+        this.ensureLocalShareFile(posterSource, (localPosterUrl) => {
+          const shareId = this.saveLocalShareBundle({
+            coverUrl: localCoverUrl || coverUrl || '',
+            posterUrl: localPosterUrl || posterSource || '',
+            info: shareInfo
+          })
+          this.setData({
+            timelineShareDraft: shareInfo,
+            timelineShareId: shareId,
+            shareCoverImageUrl: localCoverUrl || coverUrl || '',
+            sharePosterCloudFileId: (posterCloud && posterCloud.fileID) || '',
+            sharePosterImageUrl: localPosterUrl || posterSource || ''
+          })
+          wx.showShareMenu({
+            withShareTicket: true,
+            menus: ['shareTimeline']
+          })
+          wx.showModal({
+            title: '分享到朋友圈',
+            content: '请点击右上角“···”选择“分享到朋友圈”',
+            showCancel: false
+          })
+        })
       })
     }
 
