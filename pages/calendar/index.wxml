@@ -1,14 +1,17 @@
 <view class="card shared-card" wx:if="{{sharedRecord}}">
-  <view class="shared-title">来自朋友圈的记录分享</view>
-  <view class="shared-poster-wrap" wx:if="{{sharedPosterUrl}}">
-    <image class="shared-poster" src="{{sharedPosterUrl}}" mode="aspectFit" />
-  </view>
-  <view wx:else>
-    <view class="shared-date">{{sharedRecord.date}}</view>
-    <view class="shared-type">{{sharedRecord.typeLabel || '记录'}}</view>
-    <view class="shared-content">{{sharedRecord.content || '无内容'}}</view>
-    <view class="shared-meta" wx:if="{{sharedRecord.amount}}">量：{{sharedRecord.amount}}</view>
-    <view class="shared-meta" wx:if="{{sharedRecord.locationName}}">地点：{{sharedRecord.locationName}}</view>
+  <view class="shared-poster-wrap">
+    <image wx:if="{{sharedPosterUrl}}" class="shared-poster" src="{{sharedPosterUrl}}" mode="aspectFill" />
+    <view wx:else class="shared-poster shared-poster-fallback"></view>
+    <view class="shared-title">来自朋友圈的记录分享</view>
+    <view class="shared-overlay">
+      <view class="shared-date">{{sharedRecord.date}}</view>
+      <view class="shared-type">{{sharedRecord.typeLabel || '记录'}}</view>
+      <view class="shared-content">{{sharedRecord.content || '无内容'}}</view>
+      <view class="shared-meta-row">
+        <view class="shared-meta-chip" wx:if="{{sharedRecord.amount}}">量：{{sharedRecord.amount}}</view>
+        <view class="shared-meta-chip" wx:if="{{sharedRecord.locationName}}">地点：{{sharedRecord.locationName}}</view>
+      </view>
+    </view>
   </view>
   <view class="shared-cta-desc">想记录你的喝酒和健身日常？</view>
   <button class="shared-cta-btn" bindtap="onEnterAppFromShare">进入小程序，立即注册</button>
