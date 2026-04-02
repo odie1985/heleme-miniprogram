@@ -84,19 +84,8 @@
   position: relative;
   z-index: 2;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-}
-
-.scene-tag {
-  padding: 10rpx 18rpx;
-  border-radius: 999rpx;
-  color: #f3f5ff;
-  font-size: 24rpx;
-  letter-spacing: 2rpx;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1rpx solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 26rpx rgba(92, 103, 255, 0.15);
 }
 
 .skip-btn {

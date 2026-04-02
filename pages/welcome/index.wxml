@@ -8,7 +8,6 @@
   <view class="bg-glow glow-violet"></view>
 
   <view class="welcome-top">
-    <view class="scene-tag">社交与功能</view>
     <view class="skip-btn" catchtap="skipWelcome">跳过 {{countdown}}s</view>
   </view>
 
