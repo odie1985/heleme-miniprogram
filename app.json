@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/welcome/index",
     "pages/calendar/index",
     "pages/feed/index",
     "pages/profile/index",

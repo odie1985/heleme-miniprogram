@@ -1,0 +1,78 @@
+<view class="welcome-page" bindtap="enterApp">
+  <view class="bg-streak streak-a"></view>
+  <view class="bg-streak streak-b"></view>
+  <view class="bg-streak streak-c"></view>
+  <view class="bg-streak streak-d"></view>
+  <view class="bg-glow glow-pink"></view>
+  <view class="bg-glow glow-cyan"></view>
+  <view class="bg-glow glow-violet"></view>
+
+  <view class="welcome-top">
+    <view class="scene-tag">社交与功能</view>
+    <view class="skip-btn" catchtap="skipWelcome">跳过 {{countdown}}s</view>
+  </view>
+
+  <view class="float-layer">
+    <view class="float-card float-a">
+      <view class="doodle doodle-bottle"></view>
+    </view>
+    <view class="float-card float-b">
+      <view class="doodle doodle-dumbbell"></view>
+    </view>
+    <view class="float-card float-c">
+      <view class="doodle doodle-cloud"></view>
+    </view>
+    <view class="float-card float-d">
+      <view class="doodle doodle-link"></view>
+    </view>
+    <view class="float-card float-e">
+      <view class="doodle doodle-star"></view>
+    </view>
+    <view class="float-card float-f">
+      <view class="doodle doodle-boy"></view>
+    </view>
+    <view class="float-card float-g">
+      <view class="doodle doodle-girl"></view>
+    </view>
+    <view class="float-card float-h">
+      <view class="doodle doodle-kettlebell"></view>
+    </view>
+    <view class="float-card float-i">
+      <view class="doodle doodle-cocktail"></view>
+    </view>
+  </view>
+
+  <view class="hero-block">
+    <view class="hero-title">喝了么</view>
+    <view class="hero-sub">HeLeMe</view>
+    <view class="hero-copy">记录、连接、分享。把喝酒和健身，过成你自己的赛博日常。</view>
+  </view>
+
+  <view class="cards-stage">
+    <view class="feature-card card-record">
+      <view class="card-label">RECORD</view>
+      <view class="card-title">喝酒打卡</view>
+      <view class="card-copy">种类、场景、状态、地点和照片，都落在当天日历里。</view>
+    </view>
+
+    <view class="feature-card card-fitness">
+      <view class="card-label">TRAIN</view>
+      <view class="card-title">健身计划</view>
+      <view class="card-copy">有氧、无氧、时长和月度趋势，留住你的节奏感。</view>
+    </view>
+
+    <view class="feature-card card-social">
+      <view class="card-label">SHARE</view>
+      <view class="card-title">朋友互动</view>
+      <view class="card-copy">分享动态、添加好友、看彼此的生活碎片和打卡节奏。</view>
+    </view>
+  </view>
+
+  <view class="feature-line">
+    <text>日历记录</text>
+    <text class="feature-dot"></text>
+    <text>动态分享</text>
+    <text class="feature-dot"></text>
+    <text>扫码加友</text>
+  </view>
+</view>
