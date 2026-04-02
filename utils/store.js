@@ -2,6 +2,7 @@ const RECORD_KEY = 'hlm_records_v1'
 const USER_KEY = 'hlm_user_v1'
 const FRIEND_KEY = 'hlm_friends_v1'
 const FRIEND_SHARE_KEY = 'hlm_friend_shares_v1'
+const FEED_INTERACTION_KEY = 'hlm_feed_interactions_v1'
 
 function genId(prefix = 'id') {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
@@ -105,6 +106,26 @@ function updateCurrentUser(patch) {
     ...patch
   }
   wx.setStorageSync(USER_KEY, next)
+
+  const records = getRecords()
+  let changed = false
+  const syncedRecords = records.map((item) => {
+    if (item.source !== 'self' || item.ownerId !== next.id) return item
+    const nextItem = {
+      ...item,
+      nickname: next.nickname,
+      avatarUrl: next.avatarUrl || ''
+    }
+    if (nextItem.nickname !== item.nickname || nextItem.avatarUrl !== item.avatarUrl) {
+      changed = true
+      return nextItem
+    }
+    return item
+  })
+
+  if (changed) {
+    saveRecords(syncedRecords)
+  }
   return next
 }
 
@@ -162,6 +183,51 @@ function saveFriendShares(list) {
   wx.setStorageSync(FRIEND_SHARE_KEY, list)
 }
 
+function getFeedInteractionMap() {
+  return wx.getStorageSync(FEED_INTERACTION_KEY) || {}
+}
+
+function saveFeedInteractionMap(map) {
+  wx.setStorageSync(FEED_INTERACTION_KEY, map)
+}
+
+function getFeedInteraction(itemId) {
+  const map = getFeedInteractionMap()
+  return map[itemId] || { liked: false, likeCount: 0, comments: [] }
+}
+
+function toggleFeedLike(itemId) {
+  const map = getFeedInteractionMap()
+  const current = map[itemId] || { liked: false, likeCount: 0, comments: [] }
+  const liked = !current.liked
+  const likeCount = Math.max(0, (current.likeCount || 0) + (liked ? 1 : -1))
+  map[itemId] = {
+    ...current,
+    liked,
+    likeCount
+  }
+  saveFeedInteractionMap(map)
+  return map[itemId]
+}
+
+function addFeedComment(itemId, payload) {
+  const map = getFeedInteractionMap()
+  const current = map[itemId] || { liked: false, likeCount: 0, comments: [] }
+  const comments = Array.isArray(current.comments) ? current.comments.slice() : []
+  comments.push({
+    id: genId('c'),
+    nickname: payload.nickname || '喝了么用户',
+    text: payload.text || '',
+    createdAt: Date.now()
+  })
+  map[itemId] = {
+    ...current,
+    comments
+  }
+  saveFeedInteractionMap(map)
+  return map[itemId]
+}
+
 function addFriendShare(payload) {
   const list = getFriendShares()
   const share = {
@@ -169,10 +235,13 @@ function addFriendShare(payload) {
     source: 'friend',
     friendCode: payload.friendCode,
     nickname: payload.nickname || '好友',
+    avatarUrl: payload.avatarUrl || '',
     type: payload.type,
     date: payload.date || today(),
     content: payload.content || '',
     amount: payload.amount || '',
+    locationName: sanitizeLocationName(payload.locationName),
+    images: sanitizeImages(payload.images),
     createdAt: Date.now()
   }
   list.unshift(share)
@@ -247,9 +316,13 @@ function groupByDate(records) {
 }
 
 function getFeedItems(scopeFilter = 'all', typeFilter = 'all') {
+  const currentUser = ensureUser()
+  const interactionMap = getFeedInteractionMap()
   const myRecords = getRecords().map((item) => ({
     ...item,
-    source: 'self'
+    source: 'self',
+    nickname: item.source === 'self' ? currentUser.nickname : item.nickname,
+    avatarUrl: item.source === 'self' ? (currentUser.avatarUrl || '') : (item.avatarUrl || '')
   }))
 
   const friendCodes = getFriends().map((f) => f.code)
@@ -274,7 +347,10 @@ function getFeedItems(scopeFilter = 'all', typeFilter = 'all') {
   }
 
   merged.sort((a, b) => b.createdAt - a.createdAt)
-  return merged
+  return merged.map((item) => ({
+    ...item,
+    interaction: interactionMap[item.id] || { liked: false, likeCount: 0, comments: [] }
+  }))
 }
 
 function buildFriendQrPayload(user) {
@@ -316,6 +392,9 @@ module.exports = {
   addFriend,
   addFriendShare,
   getFeedItems,
+  getFeedInteraction,
+  toggleFeedLike,
+  addFeedComment,
   buildFriendQrPayload,
   parseFriendQrPayload,
   today

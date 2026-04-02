@@ -1,7 +1,25 @@
-<view class="card">
-  <view class="title">近期动态</view>
-  <view class="sub">你和好友的喝酒/健身分享</view>
+<view class="feed-cover">
+  <view class="cover-pattern"></view>
+  <view class="cover-streak streak-a"></view>
+  <view class="cover-streak streak-b"></view>
+  <view class="cover-streak streak-c"></view>
+  <view class="cover-glow glow-pink"></view>
+  <view class="cover-glow glow-cyan"></view>
+  <view class="cover-float float-a">
+    <view class="mini-doodle doodle-bottle"></view>
+  </view>
+  <view class="cover-float float-b">
+    <view class="mini-doodle doodle-dumbbell"></view>
+  </view>
+  <view class="cover-float float-c">
+    <view class="mini-doodle doodle-chat"></view>
+  </view>
+  <view class="cover-float float-d">
+    <view class="mini-doodle doodle-star"></view>
+  </view>
+</view>
 
+<view class="feed-toolbar">
   <view class="filters">
     <view class="chip {{scopeFilter==='all' ? 'chip-active' : ''}}" data-value="all" bindtap="setScopeFilter">全部</view>
     <view class="chip {{scopeFilter==='self' ? 'chip-active' : ''}}" data-value="self" bindtap="setScopeFilter">我的</view>
@@ -15,23 +33,70 @@
   </view>
 </view>
 
-<view class="card" wx:if="{{list.length}}">
+<view class="feed-list" wx:if="{{list.length}}">
   <block wx:for="{{list}}" wx:key="id">
-    <view class="feed-item">
-      <view class="row space-between">
-        <view class="row item-head">
-          <text class="tag {{item.type === 'drink' ? 'tag-drink' : 'tag-fitness'}}">{{item.type === 'drink' ? '喝酒' : '健身'}}</text>
-          <text class="author">{{item.sourceLabel}}</text>
-        </view>
-        <text class="time">{{item.date}}</text>
+    <view class="moment-item">
+      <view class="moment-avatar {{item.avatarTone}}">
+        <image wx:if="{{item.avatarUrl}}" class="avatar-image" src="{{item.avatarUrl}}" mode="aspectFill" />
+        <text wx:else>{{item.avatarText}}</text>
       </view>
-      <view class="content">{{item.content || '无备注'}}</view>
-      <view class="amount" wx:if="{{item.amount}}">数量/时长：{{item.amount}}</view>
-      <view class="amount" wx:if="{{item.locationName}}">位置：{{item.locationName}}</view>
+
+      <view class="moment-main">
+        <view class="moment-head">
+          <view class="moment-author">{{item.nickname || '喝了么用户'}}</view>
+          <view class="moment-source">{{item.sourceLabel}}</view>
+        </view>
+
+        <view class="moment-content">{{item.content || '今天也记录了一条生活动态。'}}</view>
+
+        <view class="moment-meta-row">
+          <view class="type-pill {{item.type === 'drink' ? 'type-drink' : 'type-fitness'}}">{{item.typeLabel}}</view>
+          <view class="meta-pill" wx:if="{{item.amount}}">{{item.amount}}</view>
+          <view class="meta-pill location-pill" wx:if="{{item.locationName}}">📍{{item.locationName}}</view>
+        </view>
+
+        <view class="photo-grid {{item.gridClass}}" wx:if="{{item.images && item.images.length}}">
+          <image
+            class="feed-photo"
+            wx:for="{{item.images}}"
+            wx:for-item="img"
+            wx:key="*this"
+            src="{{img}}"
+            mode="aspectFill"
+            data-id="{{item.id}}"
+            data-index="{{index}}"
+            catchtap="previewFeedImage"
+          />
+        </view>
+
+        <view class="moment-footer">
+          <view class="moment-time">{{item.displayTime}}</view>
+          <view class="moment-actions" catchtap="onMomentMoreTap" data-id="{{item.id}}">
+            <view class="action-dot"></view>
+            <view class="action-dot"></view>
+            <view class="action-dot"></view>
+          </view>
+        </view>
+
+        <view class="moment-interaction" wx:if="{{(item.interaction.likeCount || 0) > 0 || (item.interaction.comments && item.interaction.comments.length)}}">
+          <view class="like-row" wx:if="{{(item.interaction.likeCount || 0) > 0}}">
+            <text class="like-icon">♥</text>
+            <text class="like-text">{{item.interaction.likeCount}} 人觉得很赞</text>
+          </view>
+
+          <view class="comment-list" wx:if="{{item.interaction.comments && item.interaction.comments.length}}">
+            <view class="comment-item" wx:for="{{item.interaction.comments}}" wx:key="id">
+              <text class="comment-name">{{item.nickname}}</text>
+              <text class="comment-text">：{{item.text}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
     </view>
   </block>
 </view>
 
-<view class="card" wx:else>
-  <view class="sub">还没有相关动态，先去日历页记一条，或在“我的”页添加好友。</view>
+<view class="empty-wrap" wx:else>
+  <view class="empty-title">还没有动态</view>
+  <view class="empty-sub">先去日历页记一条，或者添加好友之后回来看看。</view>
 </view>
